@@ -9,7 +9,7 @@ setup:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout and Setup
-        uses: mgxs-gnss/actions-setup@v1.3
+        uses: mgxs-gnss/actions/setup@v1.3
         with: 
           artifact-name: 'build' # not required, won't create an artifact if not provided
           artifact-path: './build'  # not required, won't create an artifact if not provided
@@ -24,7 +24,7 @@ deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout and Setup
-        uses: mgxs-gnss/actions-deploy@v1.3
+        uses: mgxs-gnss/actions/deploy@v1.3
         with: 
           artifact-name: 'build'
           artifact-path: './build'
