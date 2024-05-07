@@ -1,5 +1,12 @@
-name: "mgxs.co vite"
-description: "mgxs.co Vite + Typescript + env set"
+name: "mgxs.co setup and build"
+description: "mgxs.co setup and build with artifact storage"
+inputs:
+  artifact-name:
+    description: "Artifact name"
+    required: false
+  artifact-path:
+    description: "Artifact path"
+    required: false
 runs:
   using: "composite"
   steps:
@@ -26,3 +33,16 @@ runs:
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
       run: npm install
       shell: bash
+
+    - name: Build react
+      run: npm run build
+      shell: bash
+
+    - if: ${{ inputs.artifact-name }}
+      name: Create production artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ inputs.artifact-path }}
+        if-no-files-found: error
+        retention-days: 1

@@ -1,0 +1,50 @@
+name: "mgxs.co deploy to AWS"
+description: "Deploy abstract to AWS"
+inputs:
+  artifact-name:
+    description: "Artifact name"
+    required: true
+    default: "build"
+  artifact-path:
+    description: "Artifact path"
+    required: true
+    default: "./build"
+  aws_access_key:
+    description: "AWS_ACCESS_KEY_ID"
+    required: true
+  aws_secret_key:
+    description: "AWS_SECRET_ACCESS_KEY"
+    required: true
+  aws_region:
+    description: "AWS_REGION"
+    required: true
+  aws_s3_bucket:
+    description: "AWS_S3_BUCKET"
+    required: true
+  aws_cloudfront:
+    description: AWS_CLOUDFRONT_ID
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ artifact-path }}
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ inputs.aws_access_key }}
+        aws-secret-access-key: ${{ inputs.aws_secret_key }}
+        aws-region: ${{ inputs.aws_region }}
+
+    - name: Sync to S3
+      run: aws s3 sync ./build ${{ inputs.aws_s3_bucket }} --follow-symlinks --delete
+      shell: bash
+
+    - if: ${{ inputs.aws_cloudfront }}
+      name: Invalidate CloudFront
+      run: aws cloudfront create-invalidation --distribution-id ${{ inputs.aws_cloudfront }} --paths "/*"
+      shell: bash
