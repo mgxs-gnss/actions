@@ -31,7 +31,7 @@ runs:
       uses: actions/download-artifact@v4
       with:
         name: ${{ inputs.artifact-name }}
-        path: ${{ artifact-path }}
+        path: ${{ inputs.artifact-path }}
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
