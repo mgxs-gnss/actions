@@ -1,0 +1,28 @@
+name: "mgxs.co vite"
+description: "mgxs.co Vite + Typescript + env set"
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+
+    - name: Cache node modules
+      uses: actions/cache@v4
+      id: cache-node-modules
+      with:
+        path: |
+          node_modules
+          ~/.npm
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-node-
+
+    - name: Install Dependencies
+      if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      run: npm install
+      shell: bash
